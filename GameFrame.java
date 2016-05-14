@@ -5,15 +5,12 @@ import java.awt.event.WindowListener;
 import javax.swing.*;
 
 public class GameFrame extends JFrame implements WindowListener {
-    // number of balls and balls speed in degree
-    private static final int NB_BALLS = 10, DEF_SPEED = 1;
-    
     GameCanvas canvas;
     GameFrame() {
         // frame description
         super("Q");
         // our Canvas 
-        canvas = new GameCanvas(NB_BALLS, DEF_SPEED);
+        canvas = new GameCanvas();
         add(canvas, BorderLayout.CENTER);
         // set it's size and make it visible
         setSize(800, 800);
