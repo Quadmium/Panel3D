@@ -54,23 +54,7 @@ public class GameCanvas extends Canvas implements Runnable {
         BufferStrategy strategy = getBufferStrategy();
         Graphics g = strategy.getDrawGraphics();
         g.setColor(backColor);
-        /*size = this.getSize();
-        g.fillRect(0, 0, size.width, size.height);
-        g.setColor(Color.BLACK);
-        int mode = 0;
-        for(int i=0; i<points.rows; i++)
-        {
-            for(int j=i+1; j<points.rows; j++)
-            {
-                DoubleMatrix v1 = points.getRow(i);
-                DoubleMatrix v2 = points.getRow(j);
-                double d2 = v1.distance2(v2);
-                if(mode == 0 && d2 > 4.01) continue;
-                
-                g.drawLine((int)(offset + scale * v1.get(0)), (int)(offset + scale * v1.get(1)), 
-                           (int)(offset + scale * v2.get(0)), (int)(offset + scale * v2.get(1)));
-            }
-        }*/
+        
         cam.drawScreen(g, world);
         
         if(g != null)
@@ -83,7 +67,7 @@ public class GameCanvas extends Canvas implements Runnable {
     private long lastTime = System.nanoTime();
     
     public void run() {
-        double x = 0, y = 0, z = 0, rotY = 0, rotX = 0, slowRate = 0.95, moveSpeed = 2.5, rotSpeed = 0.001;
+        double x = 0, y = 0, z = 0, rotY = 0, rotX = 0, slowRate = 0.95, moveSpeed = 2.5, rotSpeed = 0.001, fovSpeed = 0.5, fov = 0;
         Point lastMouse = MouseInfo.getPointerInfo().getLocation();
         GameObject cube = new GameObject();
         cube.mesh = new Mesh(points);
@@ -125,12 +109,10 @@ public class GameCanvas extends Canvas implements Runnable {
             rotY = (m.x - lastMouse.x) * -rotSpeed;
             rotX = (m.y - lastMouse.y) * rotSpeed;
             moveMouse(lastMouse);
-            //lastMouse = MouseInfo.getPointerInfo().getLocation();
             x *= slowRate;
             y *= slowRate;
             z *= slowRate;
-            //rotY = 0;
-            //rotX = 0;
+            fov *= slowRate;
             
             if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE)) y=-moveSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) y=moveSpeed * deltaTime;
@@ -138,23 +120,15 @@ public class GameCanvas extends Canvas implements Runnable {
             if(IsKeyPressed.isPressed(KeyEvent.VK_A)) x=-moveSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_W)) z=moveSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_S)) z=-moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_F)) fov=fovSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_R)) fov=-fovSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) return;
-            //if(IsKeyPressed.isPressed(KeyEvent.VK_F)) rotY=rotSpeed;
-            //if(IsKeyPressed.isPressed(KeyEvent.VK_R)) rotY=-rotSpeed;
             cam.transform.position.put(0,0, cam.transform.position.get(0,0) + x*Math.cos(cam.rotY) - z*Math.sin(cam.rotY));
             cam.transform.position.put(1,0, cam.transform.position.get(1,0) + y + z*Math.sin(cam.rotX));
             cam.transform.position.put(2,0, cam.transform.position.get(2,0) + z*Math.cos(cam.rotY) + x*Math.sin(cam.rotY));
             cam.rotY += rotY;
             cam.rotX += rotX;
-            //cam.rot += rot;
-            /*DoubleMatrix rX = rotX(x);
-            DoubleMatrix rY = rotY(y);
-            DoubleMatrix rot = rX.mmul(rY);
-            for(int i=0; i<points.rows; i++)
-            {
-                DoubleMatrix p = points.getRow(i);
-                points.putRow(i, rot.mmul(p.transpose()));
-            }*/
+            cam.fov += fov;
             
             if(threadStop) {
                 timer.stop();
