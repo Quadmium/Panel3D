@@ -9,7 +9,8 @@ public class Camera extends GameObject
     public double far = 300;
     public double rotY = 0;
     public double rotX = 0;
-    public double offset = 400;
+    public double offsetX = 400;
+    public double offsetY = 400;
     public double scale = 400;
     public Canvas parent;
     
@@ -58,17 +59,26 @@ public class Camera extends GameObject
                     DoubleMatrix v2 = points.getColumn(j);
                     
                     if(Math.abs(v1.get(2)) > 1  || Math.abs(v2.get(2)) > 1) continue;                   
-                    g.drawLine((int)(offset + scale * v1.get(0)), (int)(offset + scale * v1.get(1)), 
-                               (int)(offset + scale * v2.get(0)), (int)(offset + scale * v2.get(1)));
+                    g.drawLine((int)(offsetX + scale * v1.get(0)), (int)(offsetY + scale * v1.get(1)), 
+                               (int)(offsetX + scale * v2.get(0)), (int)(offsetY + scale * v2.get(1)));
                 }
             }
         }
     }
     
+    //Pre-optimization matrix:
+    /*
+     * return new DoubleMatrix(new double[][] {
+           {1/(ar * Math.tan(fov / 2)), 0, 0, 0},
+           {0, 1/Math.tan(fov / 2), 0, 0},
+           {0, 0, (-near-far)/(near-far), 2*near*far/(near-far)},
+           {0, 0, 1, 0}
+        });
+     */
     public DoubleMatrix perspective(double ar, double fov, double near, double far)
     {
         return new DoubleMatrix(new double[][] {
-           {1/(ar * Math.tan(fov / 2)), 0, 0, 0},
+           {1/(Math.tan(fov / 2)), 0, 0, 0},
            {0, 1/Math.tan(fov / 2), 0, 0},
            {0, 0, (-near-far)/(near-far), 2*near*far/(near-far)},
            {0, 0, 1, 0}

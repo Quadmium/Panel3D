@@ -3,13 +3,13 @@ import java.awt.image.BufferStrategy;
 import java.util.Random;
 import org.jblas.*;
 import java.awt.event.KeyEvent;
-import javax.swing.Timer;
+import javax.swing.*;
+import java.awt.event.*;
 
 public class GameCanvas extends Canvas implements Runnable {
     Color backColor = new Color(255, 255, 255);
     Timer timer;
     Dimension size;
-    int centerX, centerY;
     boolean threadStop = false;
     
     private double[][] points = new double[][] {
@@ -33,8 +33,7 @@ public class GameCanvas extends Canvas implements Runnable {
             {2,1,-1},
             {2,-1,-1}};
             
-    double scale = 200;
-    double offset = 400;
+    private boolean lockMouse = false;
     
     private World world = new World();
     private Camera cam;
@@ -44,6 +43,12 @@ public class GameCanvas extends Canvas implements Runnable {
         setIgnoreRepaint(true);
         cam = new Camera(this);
         cam.transform.setPosition(new double[] {0, 0, -2});
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                lockMouse = true;
+            }
+        });
         
         Chrono chrono = new Chrono(this);
         timer = new Timer(15, chrono);
@@ -53,8 +58,16 @@ public class GameCanvas extends Canvas implements Runnable {
     public synchronized void myRepaint() {
         BufferStrategy strategy = getBufferStrategy();
         Graphics g = strategy.getDrawGraphics();
+        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON); 
+        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+            RenderingHints.VALUE_TEXT_ANTIALIAS_ON); 
         g.setColor(backColor);
-        
+        size = this.getSize();
+        cam.ar = size.getWidth() / size.getHeight();
+        cam.offsetX = size.getWidth() / 2;
+        cam.offsetY = size.getHeight() / 2;
+        cam.scale = size.getHeight() / 2;
         cam.drawScreen(g, world);
         
         if(g != null)
@@ -108,7 +121,10 @@ public class GameCanvas extends Canvas implements Runnable {
             Point m = MouseInfo.getPointerInfo().getLocation();
             rotY = (m.x - lastMouse.x) * -rotSpeed;
             rotX = (m.y - lastMouse.y) * rotSpeed;
-            moveMouse(lastMouse);
+            if(lockMouse)
+                moveMouse(lastMouse);
+            else
+                lastMouse = m;
             x *= slowRate;
             y *= slowRate;
             z *= slowRate;
@@ -122,9 +138,9 @@ public class GameCanvas extends Canvas implements Runnable {
             if(IsKeyPressed.isPressed(KeyEvent.VK_S)) z=-moveSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_F)) fov=fovSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_R)) fov=-fovSpeed * deltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) return;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) lockMouse = false;
             cam.transform.position.put(0,0, cam.transform.position.get(0,0) + x*Math.cos(cam.rotY) - z*Math.sin(cam.rotY));
-            cam.transform.position.put(1,0, cam.transform.position.get(1,0) + y + z*Math.sin(cam.rotX));
+            cam.transform.position.put(1,0, cam.transform.position.get(1,0) + (Math.abs(y)>0.01?y:z*Math.sin(cam.rotX)));
             cam.transform.position.put(2,0, cam.transform.position.get(2,0) + z*Math.cos(cam.rotY) + x*Math.sin(cam.rotY));
             cam.rotY += rotY;
             cam.rotX += rotX;
