@@ -7,7 +7,7 @@ public class Transform
     
     public Transform()
     {
-        position = new DoubleMatrix(new double[] {0, 0, 0, 0});
+        position = new DoubleMatrix(new double[] {0, 0, 0});
         rotation = new DoubleMatrix(new double[] {0, 0, 0});
     }
     

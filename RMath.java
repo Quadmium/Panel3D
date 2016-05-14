@@ -19,4 +19,9 @@ public class RMath
     						{0, Math.cos(t), -Math.sin(t)},
     						{0, Math.sin(t), Math.cos(t)}});
     }
+    
+    public static DoubleMatrix PTDM(double[][] points)
+    {
+        return new DoubleMatrix(points).transpose();
+    }
 }

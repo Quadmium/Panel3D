@@ -13,4 +13,9 @@ public class Mesh
     {
         this.points = new DoubleMatrix(points).transpose();
     }
+    
+    public void setPoints(double[][] points)
+    {
+        this.points = new DoubleMatrix(points).transpose();
+    }
 }

@@ -83,7 +83,7 @@ public class GameCanvas extends Canvas implements Runnable {
     private long lastTime = System.nanoTime();
     
     public void run() {
-        double x = 0, y = 0, z = 0, rotY = 0, rotX = 0, slowRate = 0.95, moveSpeed = 0.04, rotSpeed = 0.001;
+        double x = 0, y = 0, z = 0, rotY = 0, rotX = 0, slowRate = 0.95, moveSpeed = 2.5, rotSpeed = 0.001;
         Point lastMouse = MouseInfo.getPointerInfo().getLocation();
         GameObject cube = new GameObject();
         cube.mesh = new Mesh(points);
@@ -91,11 +91,36 @@ public class GameCanvas extends Canvas implements Runnable {
         cube = new GameObject();
         cube.mesh = new Mesh(points2);
         world.objects.add(cube);
+        cube = new GameObject();
+        cube.mesh = new Mesh(points2);
+        cube.transform.setPosition(new double[]{4,0,0});
+        world.objects.add(cube);
+        cube = new GameObject();
+        cube.mesh = new Mesh(points2);
+        cube.transform.setPosition(new double[]{8,0,0});
+        world.objects.add(cube);
+        cube = new GameObject();
+        cube.mesh = new Mesh(points2);
+        cube.transform.setPosition(new double[]{12,0,0});
+        world.objects.add(cube);
+        GravCube gravCube = new GravCube();
+        gravCube.mesh = new Mesh(points2);
+        gravCube.transform.setPosition(new double[]{4,-20,4});
+        world.objects.add(gravCube);
+        Pendulum pendulum = new Pendulum();
+        pendulum.transform.setPosition(new double[]{8,-10,0});
+        world.objects.add(pendulum);
+        Fan fan = new Fan();
+        fan.transform.setPosition(new double[]{16,-10,0});
+        world.objects.add(fan);
         
         while(true)
         {
-            deltaTime = (System.nanoTime() - lastTime) / 1000;
+            deltaTime = (System.nanoTime() - lastTime) / 1000000000.0;
             lastTime = System.nanoTime();
+            for(GameObject obj : world.objects)
+                obj.OnFixedUpdate(deltaTime);
+            
             Point m = MouseInfo.getPointerInfo().getLocation();
             rotY = (m.x - lastMouse.x) * -rotSpeed;
             rotX = (m.y - lastMouse.y) * rotSpeed;
@@ -107,17 +132,17 @@ public class GameCanvas extends Canvas implements Runnable {
             //rotY = 0;
             //rotX = 0;
             
-            if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE)) y=-moveSpeed;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) y=moveSpeed;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_D)) x=moveSpeed;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_A)) x=-moveSpeed;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_W)) z=moveSpeed;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_S)) z=-moveSpeed;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE)) y=-moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) y=moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_D)) x=moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_A)) x=-moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_W)) z=moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_S)) z=-moveSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) return;
             //if(IsKeyPressed.isPressed(KeyEvent.VK_F)) rotY=rotSpeed;
             //if(IsKeyPressed.isPressed(KeyEvent.VK_R)) rotY=-rotSpeed;
             cam.transform.position.put(0,0, cam.transform.position.get(0,0) + x*Math.cos(cam.rotY) - z*Math.sin(cam.rotY));
-            cam.transform.position.put(1,0, cam.transform.position.get(1,0) + y*Math.cos(cam.rotX) + z*Math.sin(cam.rotX));
+            cam.transform.position.put(1,0, cam.transform.position.get(1,0) + y + z*Math.sin(cam.rotX));
             cam.transform.position.put(2,0, cam.transform.position.get(2,0) + z*Math.cos(cam.rotY) + x*Math.sin(cam.rotY));
             cam.rotY += rotY;
             cam.rotX += rotX;

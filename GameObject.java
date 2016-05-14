@@ -14,4 +14,8 @@ public class GameObject
         this.transform = new Transform(position);
         this.mesh = new Mesh();
     }
+    
+    public void OnFixedUpdate(double deltaTime)
+    {
+    }
 }

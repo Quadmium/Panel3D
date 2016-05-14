@@ -35,7 +35,8 @@ public class Camera extends GameObject
         g.setColor(Color.BLACK);
         for(GameObject obj : world.objects)
         {
-            DoubleMatrix points = obj.mesh.points.dup();
+            DoubleMatrix points = obj.mesh.points.dup().addColumnVector(obj.transform.position);
+            
             for(int i=0; i<points.rows; i++)
                 for(int j=0; j<points.columns; j++)
                 {
