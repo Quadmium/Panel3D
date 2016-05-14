@@ -58,10 +58,6 @@ public class GameCanvas extends Canvas implements Runnable {
     public synchronized void myRepaint() {
         BufferStrategy strategy = getBufferStrategy();
         Graphics g = strategy.getDrawGraphics();
-        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON); 
-        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-            RenderingHints.VALUE_TEXT_ANTIALIAS_ON); 
         g.setColor(backColor);
         size = this.getSize();
         cam.ar = size.getWidth() / size.getHeight();

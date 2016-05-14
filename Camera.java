@@ -1,5 +1,8 @@
 import java.awt.*;
 import org.jblas.*;
+import java.awt.event.KeyEvent;
+import javax.swing.*;
+import java.awt.event.*;
 
 public class Camera extends GameObject
 {
@@ -13,9 +16,11 @@ public class Camera extends GameObject
     public double offsetY = 400;
     public double scale = 400;
     public Canvas parent;
+    private boolean antialias = false;
     
     public Camera(Canvas parent){
         this.parent = parent;
+        init();
     }
     
     public Camera(double ar, double fov, double near, double far, Canvas parent)
@@ -25,6 +30,15 @@ public class Camera extends GameObject
         this.near = near;
         this.far = far;
         this.parent = parent;
+        init();
+    }
+    
+    private void init()
+    {
+        IsKeyPressed.addListener(KeyEvent.VK_1, (pressed) -> {
+            if(pressed)
+                antialias = !antialias;
+        });
     }
     
     public void drawScreen(Graphics g, World world)
@@ -33,6 +47,14 @@ public class Camera extends GameObject
         DoubleMatrix rotMat = RMath.rotX(rotX).mmul(RMath.rotY(rotY));
         g.fillRect(0, 0, parent.getSize().width, parent.getSize().height);
         g.setColor(Color.BLACK);
+        if(antialias)
+        {
+            ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON); 
+            ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON); 
+        }
+        
         for(GameObject obj : world.objects)
         {
             DoubleMatrix points = obj.mesh.points.dup().addColumnVector(obj.transform.position);
