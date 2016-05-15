@@ -18,6 +18,7 @@ public class Camera extends GameObject
     public double scale = 400;
     public Canvas parent;
     private boolean antialias = false;
+    private boolean drawColor = false;
     
     private DoubleMatrix perspectiveProj;
     private DoubleMatrix rotMat;
@@ -42,6 +43,10 @@ public class Camera extends GameObject
         IsKeyPressed.addListener(KeyEvent.VK_1, (pressed) -> {
             if(pressed)
                 antialias = !antialias;
+        });
+        IsKeyPressed.addListener(KeyEvent.VK_2, (pressed) -> {
+            if(pressed)
+                drawColor = !drawColor;
         });
     }
     
@@ -89,9 +94,15 @@ public class Camera extends GameObject
                     DoubleMatrix v3 = points.getColumn(2);
                             
                     if(Math.abs(v1.get(2)) > 1  || Math.abs(v2.get(2)) > 1 || Math.abs(v3.get(2)) > 1) continue;
-                    g.setColor(new Color(a,a,a));
-                    g.fillPolygon(new int[]{(int)(offsetX + scale * v1.get(0)), (int)(offsetX + scale * v2.get(0)), (int)(offsetX + scale * v3.get(0))}, 
-                                  new int[]{(int)(offsetY + scale * v1.get(1)), (int)(offsetY + scale * v2.get(1)), (int)(offsetY + scale * v3.get(1))}, 3);
+                    if(drawColor)
+                    {
+                        g.setColor(new Color(a,a,a));
+                        g.fillPolygon(new int[]{(int)(offsetX + scale * v1.get(0)), (int)(offsetX + scale * v2.get(0)), (int)(offsetX + scale * v3.get(0))}, 
+                                      new int[]{(int)(offsetY + scale * v1.get(1)), (int)(offsetY + scale * v2.get(1)), (int)(offsetY + scale * v3.get(1))}, 3);
+                    }
+                    else
+                        g.drawPolygon(new int[]{(int)(offsetX + scale * v1.get(0)), (int)(offsetX + scale * v2.get(0)), (int)(offsetX + scale * v3.get(0))}, 
+                                      new int[]{(int)(offsetY + scale * v1.get(1)), (int)(offsetY + scale * v2.get(1)), (int)(offsetY + scale * v3.get(1))}, 3);
                     g.setColor(Color.BLACK);
                 }
             }
