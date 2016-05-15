@@ -2,6 +2,7 @@ public class GameObject
 {
     public Transform transform;
     public Mesh mesh;
+    public int drawMode = 0;
     
     public GameObject()
     {

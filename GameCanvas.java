@@ -106,6 +106,9 @@ public class GameCanvas extends Canvas implements Runnable {
         Fan fan = new Fan();
         fan.transform.setPosition(new double[]{16,-10,0});
         world.objects.add(fan);
+        TriCube tricube = new TriCube();
+        tricube.transform.setPosition(new double[]{10,0,10});
+        world.objects.add(tricube);
         
         while(true)
         {

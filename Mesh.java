@@ -1,8 +1,11 @@
 import org.jblas.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Mesh
 {
     public DoubleMatrix points = new DoubleMatrix(new double[][]{{}});
+    public List<Integer> triangles = new ArrayList<Integer>();
     
     public Mesh()
     {
