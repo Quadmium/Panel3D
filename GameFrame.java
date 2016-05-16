@@ -9,7 +9,7 @@ public class GameFrame extends JFrame implements WindowListener {
     GameFrame() {
         // frame description
         super("Q");
-        // our Canvas 
+        // our Canvas
         canvas = new GameCanvas();
         add(canvas, BorderLayout.CENTER);
         // set it's size and make it visible

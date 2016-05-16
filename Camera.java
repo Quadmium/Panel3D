@@ -66,62 +66,64 @@ public class Camera extends GameObject
         
         PriorityQueue<Triangle> drawOrder = new PriorityQueue<Triangle>(12, 
                     (x,y) -> (y.data[0] > x.data[0] ? 1 : y.data[0] < x.data[0] ? -1 : 0));
-        for(GameObject obj : world.objects)
-        {
-            if(obj.drawMode == 1)
+        synchronized(World.class) {
+            for(GameObject obj : world.objects)
             {
-                for(int i=0; i<obj.mesh.triangles.size(); i+=3)
+                if(obj.drawMode == 1)
                 {
-                    DoubleMatrix points = DoubleMatrix.concatHorizontally(DoubleMatrix.concatHorizontally(
-                                          obj.mesh.points.getColumn(obj.mesh.triangles.get(i)),
-                                          obj.mesh.points.getColumn(obj.mesh.triangles.get(i+1))),
-                                          obj.mesh.points.getColumn(obj.mesh.triangles.get(i+2)));
-                    double b = DoubleMatrix.ones(3).distance2(points.rowMeans());
-                    points = points.addColumnVector(obj.transform.position);
-                    points = project(points);
-                    double a = points.getRow(3).norm2();
-                    
-                    drawOrder.add(new Triangle(points, new double[]{a,b}));
-                }
-                
-                while(drawOrder.size() != 0)
-                {
-                    Triangle t = drawOrder.poll();
-                    int a = (int)(t.data[1] * 256 / 3);
-                    DoubleMatrix points = t.triangles;
-                    DoubleMatrix v1 = points.getColumn(0);
-                    DoubleMatrix v2 = points.getColumn(1);
-                    DoubleMatrix v3 = points.getColumn(2);
-                            
-                    if(Math.abs(v1.get(2)) > 1  || Math.abs(v2.get(2)) > 1 || Math.abs(v3.get(2)) > 1) continue;
-                    if(drawColor)
+                    for(int i=0; i<obj.mesh.triangles.size(); i+=3)
                     {
-                        g.setColor(new Color(a,a,a));
-                        g.fillPolygon(new int[]{(int)(offsetX + scale * v1.get(0)), (int)(offsetX + scale * v2.get(0)), (int)(offsetX + scale * v3.get(0))}, 
-                                      new int[]{(int)(offsetY + scale * v1.get(1)), (int)(offsetY + scale * v2.get(1)), (int)(offsetY + scale * v3.get(1))}, 3);
-                    }
-                    else
-                        g.drawPolygon(new int[]{(int)(offsetX + scale * v1.get(0)), (int)(offsetX + scale * v2.get(0)), (int)(offsetX + scale * v3.get(0))}, 
-                                      new int[]{(int)(offsetY + scale * v1.get(1)), (int)(offsetY + scale * v2.get(1)), (int)(offsetY + scale * v3.get(1))}, 3);
-                    g.setColor(Color.BLACK);
-                }
-            }
-            else
-            {
-                DoubleMatrix points = obj.mesh.points.dup().addColumnVector(obj.transform.position);
-                
-                points = project(points);
-                    
-                for(int i=0; i<points.columns; i++)
-                {
-                    for(int j=i+1; j<points.columns; j++)
-                    {
-                        DoubleMatrix v1 = points.getColumn(i);
-                        DoubleMatrix v2 = points.getColumn(j);
+                        DoubleMatrix points = DoubleMatrix.concatHorizontally(DoubleMatrix.concatHorizontally(
+                                              obj.mesh.points.getColumn(obj.mesh.triangles.get(i)),
+                                              obj.mesh.points.getColumn(obj.mesh.triangles.get(i+1))),
+                                              obj.mesh.points.getColumn(obj.mesh.triangles.get(i+2)));
+                        double b = DoubleMatrix.ones(3).distance2(points.rowMeans());
+                        points = points.addColumnVector(obj.transform.position);
+                        points = project(points);
+                        double a = points.getRow(3).norm2();
                         
-                        if(Math.abs(v1.get(2)) > 1  || Math.abs(v2.get(2)) > 1) continue;                   
-                        g.drawLine((int)(offsetX + scale * v1.get(0)), (int)(offsetY + scale * v1.get(1)), 
-                                   (int)(offsetX + scale * v2.get(0)), (int)(offsetY + scale * v2.get(1)));
+                        drawOrder.add(new Triangle(points, new double[]{a,b}));
+                    }
+                    
+                    while(drawOrder.size() != 0)
+                    {
+                        Triangle t = drawOrder.poll();
+                        int a = (int)(t.data[1] * 256 / 3);
+                        DoubleMatrix points = t.triangles;
+                        DoubleMatrix v1 = points.getColumn(0);
+                        DoubleMatrix v2 = points.getColumn(1);
+                        DoubleMatrix v3 = points.getColumn(2);
+                                
+                        if(Math.abs(v1.get(2)) > 1  || Math.abs(v2.get(2)) > 1 || Math.abs(v3.get(2)) > 1) continue;
+                        if(drawColor)
+                        {
+                            g.setColor(new Color(a,a,a));
+                            g.fillPolygon(new int[]{(int)(offsetX + scale * v1.get(0)), (int)(offsetX + scale * v2.get(0)), (int)(offsetX + scale * v3.get(0))}, 
+                                          new int[]{(int)(offsetY + scale * v1.get(1)), (int)(offsetY + scale * v2.get(1)), (int)(offsetY + scale * v3.get(1))}, 3);
+                        }
+                        else
+                            g.drawPolygon(new int[]{(int)(offsetX + scale * v1.get(0)), (int)(offsetX + scale * v2.get(0)), (int)(offsetX + scale * v3.get(0))}, 
+                                          new int[]{(int)(offsetY + scale * v1.get(1)), (int)(offsetY + scale * v2.get(1)), (int)(offsetY + scale * v3.get(1))}, 3);
+                        g.setColor(Color.BLACK);
+                    }
+                }
+                else
+                {
+                    DoubleMatrix points = obj.mesh.points.dup().addColumnVector(obj.transform.position);
+                    
+                    points = project(points);
+                        
+                    for(int i=0; i<points.columns; i++)
+                    {
+                        for(int j=i+1; j<points.columns; j++)
+                        {
+                            DoubleMatrix v1 = points.getColumn(i);
+                            DoubleMatrix v2 = points.getColumn(j);
+                            
+                            if(Math.abs(v1.get(2)) > 1  || Math.abs(v2.get(2)) > 1) continue;                   
+                            g.drawLine((int)(offsetX + scale * v1.get(0)), (int)(offsetY + scale * v1.get(1)), 
+                                       (int)(offsetX + scale * v2.get(0)), (int)(offsetY + scale * v2.get(1)));
+                        }
                     }
                 }
             }

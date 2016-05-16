@@ -35,7 +35,7 @@ public class GameCanvas extends Canvas implements Runnable {
             
     private boolean lockMouse = false;
     
-    private World world = new World();
+    private volatile World world = new World();
     private Camera cam;
     
     GameCanvas() {
@@ -78,37 +78,40 @@ public class GameCanvas extends Canvas implements Runnable {
     public void run() {
         double x = 0, y = 0, z = 0, rotY = 0, rotX = 0, slowRate = 0.95, moveSpeed = 2.5, rotSpeed = 0.001, fovSpeed = 0.5, fov = 0;
         Point lastMouse = MouseInfo.getPointerInfo().getLocation();
-        GameObject cube = new GameObject();
-        cube.mesh = new Mesh(points);
-        world.objects.add(cube);
-        cube = new GameObject();
-        cube.mesh = new Mesh(points2);
-        world.objects.add(cube);
-        cube = new GameObject();
-        cube.mesh = new Mesh(points2);
-        cube.transform.setPosition(new double[]{4,0,0});
-        world.objects.add(cube);
-        cube = new GameObject();
-        cube.mesh = new Mesh(points2);
-        cube.transform.setPosition(new double[]{8,0,0});
-        world.objects.add(cube);
-        cube = new GameObject();
-        cube.mesh = new Mesh(points2);
-        cube.transform.setPosition(new double[]{12,0,0});
-        world.objects.add(cube);
-        GravCube gravCube = new GravCube();
-        gravCube.mesh = new Mesh(points2);
-        gravCube.transform.setPosition(new double[]{4,-20,4});
-        world.objects.add(gravCube);
-        Pendulum pendulum = new Pendulum();
-        pendulum.transform.setPosition(new double[]{8,-10,0});
-        world.objects.add(pendulum);
-        Fan fan = new Fan();
-        fan.transform.setPosition(new double[]{16,-10,0});
-        world.objects.add(fan);
-        TriCube tricube = new TriCube();
-        tricube.transform.setPosition(new double[]{10,0,10});
-        world.objects.add(tricube);
+        synchronized(World.class)
+        {
+            GameObject cube = new GameObject();
+            cube.mesh = new Mesh(points);
+            world.objects.add(cube);
+            cube = new GameObject();
+            cube.mesh = new Mesh(points2);
+            world.objects.add(cube);
+            cube = new GameObject();
+            cube.mesh = new Mesh(points2);
+            cube.transform.setPosition(new double[]{4,0,0});
+            world.objects.add(cube);
+            cube = new GameObject();
+            cube.mesh = new Mesh(points2);
+            cube.transform.setPosition(new double[]{8,0,0});
+            world.objects.add(cube);
+            cube = new GameObject();
+            cube.mesh = new Mesh(points2);
+            cube.transform.setPosition(new double[]{12,0,0});
+            world.objects.add(cube);
+            GravCube gravCube = new GravCube();
+            gravCube.mesh = new Mesh(points2);
+            gravCube.transform.setPosition(new double[]{4,-20,4});
+            world.objects.add(gravCube);
+            Pendulum pendulum = new Pendulum();
+            pendulum.transform.setPosition(new double[]{8,-10,0});
+            world.objects.add(pendulum);
+            Fan fan = new Fan();
+            fan.transform.setPosition(new double[]{16,-10,0});
+            world.objects.add(fan);
+            TriCube tricube = new TriCube();
+            tricube.transform.setPosition(new double[]{10,0,10});
+            world.objects.add(tricube);
+        }
         
         while(true)
         {
