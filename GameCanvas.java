@@ -78,7 +78,7 @@ public class GameCanvas extends Canvas implements Runnable {
     public void run() {
         double x = 0, y = 0, z = 0, rotY = 0, rotX = 0, slowRate = 0.95, moveSpeed = 2.5, rotSpeed = 0.001, fovSpeed = 0.5, fov = 0;
         Point lastMouse = MouseInfo.getPointerInfo().getLocation();
-        synchronized(World.class)
+        synchronized(world)
         {
             GameObject cube = new GameObject();
             cube.mesh = new Mesh(points);

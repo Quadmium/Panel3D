@@ -66,7 +66,7 @@ public class Camera extends GameObject
         
         PriorityQueue<Triangle> drawOrder = new PriorityQueue<Triangle>(12, 
                     (x,y) -> (y.data[0] > x.data[0] ? 1 : y.data[0] < x.data[0] ? -1 : 0));
-        synchronized(World.class) {
+        synchronized(world) {
             for(GameObject obj : world.objects)
             {
                 if(obj.drawMode == 1)
