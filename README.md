@@ -8,7 +8,11 @@ Build project with BlueJ or another Java compiler. To run, load the GameFrame cl
 
 ## Usage
 
-None yet.
+W,A,S,D,Space,Shift = move camera
+R,F = adjust FOV
+Escape = release mouse
+1 = toggle antialiasing
+2 = toggle shaded box
 
 ## Contributing
 

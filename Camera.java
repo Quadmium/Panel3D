@@ -132,11 +132,7 @@ public class Camera extends GameObject
     
     public DoubleMatrix project(DoubleMatrix points)
     {
-        for(int i=0; i<points.rows; i++)
-            for(int j=0; j<points.columns; j++)
-            {
-                points.put(i,j,points.get(i,j)-transform.position.get(i,0));
-            }
+        points = points.subColumnVector(transform.position);
         points = rotMat.mmul(points);
         points = DoubleMatrix.concatVertically(points, DoubleMatrix.ones(1, points.columns));
         points = perspectiveProj.mmul(points); 
