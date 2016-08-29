@@ -5,3 +5,6 @@
 *.ctxt
 *.bluej
 .DS_Store
+/nbproject/private/
+/dist/
+/build/
