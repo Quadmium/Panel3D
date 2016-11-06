@@ -11,5 +11,5 @@ package panel3d;
  */
 public class Constants
 {
-    public static double GRAVITY_ACCEL = -1;
+    public static double GRAVITY_ACCEL = -13;
 }

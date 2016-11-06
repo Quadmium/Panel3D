@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.*;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.jblas.DoubleMatrix;
 
 public class GameCanvas extends Canvas implements Runnable {
     private Color backColor = new Color(255, 255, 255);
@@ -45,6 +46,8 @@ public class GameCanvas extends Canvas implements Runnable {
     
     private double fixedDeltaTime = 0.01;
     private long fixedLastTime = System.nanoTime();
+    
+    private int firstRuns = 0;
     
     GameCanvas() {
         super();
@@ -152,9 +155,24 @@ public class GameCanvas extends Canvas implements Runnable {
             trisphere.transform.setPosition(new double[]{15,0,10});
             world.objects.add(trisphere);
             
-            RectPrism rectPrism = new RectPrism(20,2,20);
-            rectPrism.transform.setPosition(new double[]{0,-2,0});
-            world.objects.add(rectPrism);
+            for(int r = 0; r < 5; r++)
+            for(int rr = 0; rr < 5; rr++)
+            {
+                cube = new GameObject();
+                cube.mesh = new Mesh(points2);
+                cube.transform.setPosition(new double[]{r*4,-4,-25+rr*4});
+                world.objects.add(cube);
+                /*RectPrism rectPrism = new RectPrism(4,4,4);
+                rectPrism.transform.setPosition(new double[]{r*4,-4,-25+rr*4});
+                rectPrism.supportsSolid = false;
+                world.objects.add(rectPrism);*/
+            }
+            
+            Ball ball = new Ball();
+            ball.transform.setPosition(new double[]{2,2,-15});
+            ball.rigidbody.velocity.put(0, 8);
+            ball.rigidbody.velocity.put(2, 9);
+            world.objects.add(ball);
         }
         new Thread(() -> {myRepaint();}).start();
         
@@ -168,9 +186,20 @@ public class GameCanvas extends Canvas implements Runnable {
     
     private void FixedUpdateLoop()
     {
-        double x = 0, y = 0, z = 0, slowRate = 0.95, moveSpeed = 2.5, rotSpeed = 0.001, fovSpeed = 0.5, fov = 0;
+        double x = 0, y = 0, z = 0, slowRate = 0.95, moveSpeed = 5, rotSpeed = 0.001, fovSpeed = 0.5, fov = 0;
         fixedDeltaTime = (System.nanoTime() - fixedLastTime) / 1000000000.0;
         fixedLastTime = System.nanoTime();
+        
+        // Find out later why this happens...
+        // At first few updates, I think JBLAS is loading and causes hangtime, which leads to 0.4 deltaTime
+        // For first 10 or so updates if cycle is running way too slow, set it to some really tiny deltaTime.
+        // Hopefully JBLAS loads when that is over!
+        
+        if(fixedDeltaTime > 0.1 && firstRuns < 10)
+        {
+            fixedDeltaTime = 0.0001;
+            firstRuns++;
+        }
         
         synchronized(world)
         {

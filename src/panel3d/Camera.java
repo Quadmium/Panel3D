@@ -128,7 +128,8 @@ public class Camera extends GameObject
                                     points.put(ii,jj,points.get(ii,jj)/points.get(3,jj));
                         }
                             
-                        drawOrder.add(new Triangle(doCorrect ? points : projected, obj.mesh.triColor.size() > i/3 ? obj.mesh.triColor.get(i/3) : Color.magenta, new double[] {(doCorrect ? points : projected).getRow(3).norm2()}));
+                        drawOrder.add(new Triangle(doCorrect ? points : projected, obj.mesh.triColor.size() > i/3 ? obj.mesh.triColor.get(i/3) : Color.magenta, 
+                                      new double[] {(doCorrect ? points : projected).getRow(3).norm2(), obj.supportsSolid ? 1 : 0}));
                     }
                 }
             }
@@ -147,7 +148,7 @@ public class Camera extends GameObject
                 score += Math.abs(v3.get(2)) > 1 ? 0 : 1;
                 if(score < 2) continue;
 
-                if(drawColor)
+                if(drawColor && t.data[1] == 1)
                 {
                     g.setColor(t.color);
                     g.fillPolygon(new int[]{(int)(offsetX + scale * v1.get(0)), (int)(offsetX + scale * v2.get(0)), (int)(offsetX + scale * v3.get(0))}, 

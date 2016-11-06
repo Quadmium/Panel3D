@@ -9,6 +9,7 @@ public class GameObject
     public Mesh rotatedMesh;
     public DoubleMatrix lastRotation;
     public int drawMode = 0;
+    public boolean supportsSolid = true;
     
     public GameObject()
     {

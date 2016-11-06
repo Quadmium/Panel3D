@@ -14,8 +14,8 @@ import org.jblas.*;
 public class Rigidbody
 {
     public GameObject parent;
-    private DoubleMatrix velocity = RMath.PTDM(new double[][] {{0, 0, 0}});
-    private DoubleMatrix acceleration = RMath.PTDM(new double[][] {{0, 0, 0}});
+    public DoubleMatrix velocity = RMath.PTDM(new double[][] {{0, 0, 0}});
+    public DoubleMatrix acceleration = RMath.PTDM(new double[][] {{0, 0, 0}});
     public boolean gravity = true;
     
     public Rigidbody(GameObject parent)
@@ -25,6 +25,7 @@ public class Rigidbody
     
     public void OnFixedUpdate(double deltaTime)
     {
+        System.out.println(deltaTime);
         velocity = velocity.add(acceleration.mul(deltaTime));
         parent.transform.position = parent.transform.position.add(velocity.mul(deltaTime));
         

@@ -4,12 +4,12 @@ import java.awt.Color;
 import org.jblas.*;
 import panel3d.*;
 
-public class TriSphere extends GameObject
+public class Ball extends GameObject
 {
     private double speed = 3;
     public Rigidbody rigidbody;
     
-    public TriSphere()
+    public Ball()
     {
         int subDiv = 10;
         int triIndex = 0;
@@ -55,5 +55,27 @@ public class TriSphere extends GameObject
     public void OnFixedUpdate(double deltaTime)
     {
         super.OnFixedUpdate(deltaTime);
+        
+        rigidbody.OnFixedUpdate(deltaTime);
+        
+        double lowerBarrier = -3, xB = 2, xB2 = 20, zB = -27, zB2 = -7, radius = 1;
+        
+        if(transform.position.get(0) < xB + radius || transform.position.get(0) > xB2 - radius)
+        {
+            rigidbody.velocity.put(0, rigidbody.velocity.get(0) * -1);
+            transform.position.put(0, transform.position.get(0) < xB + radius ? xB + radius : xB2 - radius);
+        }
+        
+        if(transform.position.get(1) < lowerBarrier + radius)
+        {
+            rigidbody.velocity.put(1, rigidbody.velocity.get(1) * -1);
+            transform.position.put(1, lowerBarrier + radius);
+        }
+        
+        if(transform.position.get(2) < zB + radius || transform.position.get(2) > zB2 - radius)
+        {
+            rigidbody.velocity.put(2, rigidbody.velocity.get(2) * -1);
+            transform.position.put(2, transform.position.get(2) < zB + radius ? zB + radius : zB2 - radius);
+        }
     }
 }
