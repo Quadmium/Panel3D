@@ -1,17 +1,18 @@
 package panel3d;
 
+import java.awt.Color;
 import org.jblas.*;
 import java.util.List;
 import java.util.ArrayList;
 
 public class Mesh
 {
-    public DoubleMatrix points = new DoubleMatrix(new double[][]{{}});
+    public DoubleMatrix points = null;
     public List<Integer> triangles = new ArrayList<Integer>();
+    public List<Color> triColor = new ArrayList<Color>();
     
     public Mesh()
     {
-        this.points = DoubleMatrix.zeros(0);
     }
     
     public Mesh(double[][] points)

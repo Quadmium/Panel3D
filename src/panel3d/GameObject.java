@@ -28,7 +28,7 @@ public class GameObject
     public void updateRot()
     {
         transform.updateRotation();
-        if(!lastRotation.equals(transform.rotation) || mesh.points.length != rotatedMesh.points.length)
+        if(mesh.points != null && (!lastRotation.equals(transform.rotation) || rotatedMesh.points == null || mesh.points.length != rotatedMesh.points.length))
         {
             lastRotation = transform.rotation;
             if(mesh.points.rows == transform.rotation.columns)

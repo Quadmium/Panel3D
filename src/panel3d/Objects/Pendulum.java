@@ -44,8 +44,8 @@ public class Pendulum extends GameObject
             time -= period;
             
         theta = Math.sin(2*Math.PI/period*time);
+        //transform.rotX = theta;
         transform.rotX = theta;
-        transform.rotZ = time;
         //mesh.points = RMath.rotX(theta).mmul(points.subColumnVector(center)).addColumnVector(center);
     }
 }

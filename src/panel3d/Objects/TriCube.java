@@ -1,5 +1,6 @@
 package panel3d.Objects;
 
+import java.awt.Color;
 import org.jblas.*;
 import java.util.List;
 import java.util.Arrays;
@@ -27,6 +28,14 @@ public class TriCube extends GameObject
         mesh.points = points;
         mesh.triangles = triangles;
         drawMode = 1;
+        
+        for(int tri=0; tri < mesh.triangles.size(); tri += 3)
+        {
+            int a = (int) (90 * DoubleMatrix.ones(3).distance2(mesh.points.getColumn(mesh.triangles.get(tri)).add(
+                                                               mesh.points.getColumn(mesh.triangles.get(tri+1)).add(
+                                                               mesh.points.getColumn(mesh.triangles.get(tri+2)))).div(3)));
+            mesh.triColor.add(new Color(a,a,a));
+        }
     }
     
     public void OnFixedUpdate(double deltaTime)

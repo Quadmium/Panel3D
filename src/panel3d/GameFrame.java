@@ -20,6 +20,7 @@ public class GameFrame extends JFrame implements WindowListener {
         addWindowListener(this);
         // show us
         setVisible(true);       
+        setLocationRelativeTo(null);
         // now that is visible we can tell it that we will use 2 buffers to do the repaint
         // before being able to do that, the Canvas as to be visible
         canvas.createBufferStrategy(2);
@@ -43,6 +44,7 @@ public class GameFrame extends JFrame implements WindowListener {
     public void windowClosing(WindowEvent e) {
         canvas.threadStop = true;
         dispose();
+        System.exit(1);
     }
     public void windowActivated(WindowEvent e) {}
     public void windowClosed(WindowEvent e) {}

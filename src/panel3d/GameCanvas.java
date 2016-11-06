@@ -1,9 +1,6 @@
 package panel3d;
 
-import panel3d.Objects.GravCube;
-import panel3d.Objects.Pendulum;
-import panel3d.Objects.Fan;
-import panel3d.Objects.TriCube;
+import panel3d.Objects.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
@@ -151,6 +148,13 @@ public class GameCanvas extends Canvas implements Runnable {
             TriCube tricube = new TriCube();
             tricube.transform.setPosition(new double[]{10,0,10});
             world.objects.add(tricube);
+            TriSphere trisphere = new TriSphere();
+            trisphere.transform.setPosition(new double[]{15,0,10});
+            world.objects.add(trisphere);
+            
+            RectPrism rectPrism = new RectPrism(20,2,20);
+            rectPrism.transform.setPosition(new double[]{0,-2,0});
+            world.objects.add(rectPrism);
         }
         new Thread(() -> {myRepaint();}).start();
         
@@ -167,27 +171,31 @@ public class GameCanvas extends Canvas implements Runnable {
         double x = 0, y = 0, z = 0, slowRate = 0.95, moveSpeed = 2.5, rotSpeed = 0.001, fovSpeed = 0.5, fov = 0;
         fixedDeltaTime = (System.nanoTime() - fixedLastTime) / 1000000000.0;
         fixedLastTime = System.nanoTime();
-        for(GameObject obj : world.objects)
-            obj.OnFixedUpdate(fixedDeltaTime);
         
-        x *= slowRate;
-        y *= slowRate;
-        z *= slowRate;
-        fov *= slowRate;
+        synchronized(world)
+        {
+            for(GameObject obj : world.objects)
+                obj.OnFixedUpdate(fixedDeltaTime);
 
-        if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE)) y=moveSpeed * fixedDeltaTime;
-        if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) y=-moveSpeed * fixedDeltaTime;
-        if(IsKeyPressed.isPressed(KeyEvent.VK_D)) x=moveSpeed * fixedDeltaTime;
-        if(IsKeyPressed.isPressed(KeyEvent.VK_A)) x=-moveSpeed * fixedDeltaTime;
-        if(IsKeyPressed.isPressed(KeyEvent.VK_W)) z=moveSpeed * fixedDeltaTime;
-        if(IsKeyPressed.isPressed(KeyEvent.VK_S)) z=-moveSpeed * fixedDeltaTime;
-        if(IsKeyPressed.isPressed(KeyEvent.VK_F)) fov=fovSpeed * fixedDeltaTime;
-        if(IsKeyPressed.isPressed(KeyEvent.VK_R)) fov=-fovSpeed * fixedDeltaTime;
-        if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) lockMouse = false;
-        camera.transform.position.put(0,0, camera.transform.position.get(0,0) + x*Math.cos(camera.rotY) - z*Math.sin(camera.rotY));
-        camera.transform.position.put(1,0, camera.transform.position.get(1,0) + (Math.abs(y)>0.01?y:z*Math.sin(camera.rotX)));
-        camera.transform.position.put(2,0, camera.transform.position.get(2,0) + z*Math.cos(camera.rotY) + x*Math.sin(camera.rotY));
-        camera.fov += fov;
+            x *= slowRate;
+            y *= slowRate;
+            z *= slowRate;
+            fov *= slowRate;
+
+            if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE)) y=moveSpeed * fixedDeltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) y=-moveSpeed * fixedDeltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_D)) x=moveSpeed * fixedDeltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_A)) x=-moveSpeed * fixedDeltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_W)) z=moveSpeed * fixedDeltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_S)) z=-moveSpeed * fixedDeltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_F)) fov=fovSpeed * fixedDeltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_R)) fov=-fovSpeed * fixedDeltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) lockMouse = false;
+            camera.transform.position.put(0,0, camera.transform.position.get(0,0) + x*Math.cos(camera.rotY) - z*Math.sin(camera.rotY));
+            camera.transform.position.put(1,0, camera.transform.position.get(1,0) + (Math.abs(y)>0.01?y:z*Math.sin(camera.rotX)));
+            camera.transform.position.put(2,0, camera.transform.position.get(2,0) + z*Math.cos(camera.rotY) + x*Math.sin(camera.rotY));
+            camera.fov += fov;
+        }
     }
     
     public void moveMouse(Point p) {
