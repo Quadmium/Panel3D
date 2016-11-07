@@ -146,6 +146,10 @@ public class GameCanvas extends Canvas implements Runnable {
         double averageFPS=0, fpsUpdateSeconds = 0.2;
         
         double x = 0, y = 0, z = 0, slowRate = 0.95, moveSpeed = 5, fovSpeed = 0.5, fov = 0;
+        int camMode = 0;
+        boolean pressingC = false, inJump = false;
+        double groundY = -1, height=3, originalHeight = 3;
+        double jumpStartTime = System.nanoTime();
         
         while(true)
         {
@@ -171,12 +175,6 @@ public class GameCanvas extends Canvas implements Runnable {
             else
                 lastMouse = m;
             
-            camera.rotY += rotY;
-            camera.rotX += rotX;
-            x *= slowRate;
-            y *= slowRate;
-            z *= slowRate;
-            fov *= slowRate;
 
             if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE)) y=moveSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) y=-moveSpeed * deltaTime;
@@ -187,10 +185,50 @@ public class GameCanvas extends Canvas implements Runnable {
             if(IsKeyPressed.isPressed(KeyEvent.VK_F)) fov=fovSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_R)) fov=-fovSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) lockMouse = false;
-            camera.transform.position.put(0,0, camera.transform.position.get(0,0) + x*Math.cos(camera.rotY) - z*Math.sin(camera.rotY));
-            camera.transform.position.put(1,0, camera.transform.position.get(1,0) + (Math.abs(y)>0.6 * deltaTime ?y:z*Math.sin(camera.rotX)));
-            camera.transform.position.put(2,0, camera.transform.position.get(2,0) + z*Math.cos(camera.rotY) + x*Math.sin(camera.rotY));
+            if(IsKeyPressed.isPressed(KeyEvent.VK_C) && !pressingC) 
+            {
+                camMode = 1-camMode;
+                pressingC = true;
+            }
+            else if(!IsKeyPressed.isPressed(KeyEvent.VK_C) && pressingC) 
+                pressingC = false;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) height=originalHeight/2;
+            else height=originalHeight;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE) && !inJump) 
+            {
+                inJump = true;
+                jumpStartTime = System.nanoTime();
+            }
+            
+            camera.rotY += rotY;
+            camera.rotX += rotX;
             camera.fov += fov;
+            x *= slowRate;
+            y *= slowRate;
+            z *= slowRate;
+            fov *= slowRate;
+            
+            if(camMode == 0)
+            {
+                camera.transform.position.put(0, camera.transform.position.get(0) + x*Math.cos(camera.rotY) - z*Math.sin(camera.rotY));
+                camera.transform.position.put(1, camera.transform.position.get(1) + (Math.abs(y)>0.6 * deltaTime ?y:z*Math.sin(camera.rotX)));
+                camera.transform.position.put(2, camera.transform.position.get(2) + z*Math.cos(camera.rotY) + x*Math.sin(camera.rotY));
+            }
+            else if(camMode == 1)
+            {
+                camera.transform.position.put(1, groundY + height);
+                camera.transform.position.put(0, camera.transform.position.get(0) + x*Math.cos(camera.rotY) - z*Math.sin(camera.rotY));
+                camera.transform.position.put(2, camera.transform.position.get(2) + z*Math.cos(camera.rotY) + x*Math.sin(camera.rotY));
+                
+                if(inJump)
+                {
+                    double passedTime = (System.nanoTime() - jumpStartTime) / 1000000000.0;
+                    double dy = Constants.GRAVITY_ACCEL / 2 * passedTime * passedTime + 5 * passedTime;
+                    camera.transform.position.put(1, camera.transform.position.get(1) + dy);
+                    if(dy < 0)
+                        inJump = false;
+                }
+            }
             
             if(System.nanoTime() / 1000000000.0 - lastFPSResetTime > fpsUpdateSeconds)
             {
