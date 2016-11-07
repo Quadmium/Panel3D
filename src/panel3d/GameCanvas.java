@@ -66,57 +66,6 @@ public class GameCanvas extends Canvas implements Runnable {
         timer.start();*/
     }
     
-    public synchronized void myRepaint() {
-        double rotY = 0, rotX = 0, rotSpeed = 1;
-        Point lastMouse = MouseInfo.getPointerInfo().getLocation();
-        
-        double lastFPSResetTime = System.nanoTime() / 1000000000.0;
-        int numRendered = 0;
-        double averageFPS=0, fpsUpdateSeconds = 0.2;
-        
-        while(true)
-        {
-            deltaTime = (System.nanoTime() - lastTime) / 1000000000.0;
-            lastTime = System.nanoTime();
-            numRendered++;
-            
-            BufferStrategy strategy = getBufferStrategy();
-            Graphics g = strategy.getDrawGraphics();
-            g.setColor(backColor);
-            size = this.getSize();
-            camera.ar = size.getWidth() / size.getHeight();
-            camera.offsetX = size.getWidth() / 2;
-            camera.offsetY = size.getHeight() / 2;
-            camera.scale = size.getHeight() / 2;
-            camera.drawScreen(g, world);
-
-            Point m = MouseInfo.getPointerInfo().getLocation();
-            rotY = (m.x - lastMouse.x) * -rotSpeed * deltaTime;
-            rotX = (m.y - lastMouse.y) * -rotSpeed * deltaTime;
-            if(lockMouse)
-                moveMouse(lastMouse);
-            else
-                lastMouse = m;
-            
-            camera.rotY += rotY;
-            camera.rotX += rotX;
-            
-            if(System.nanoTime() / 1000000000.0 - lastFPSResetTime > fpsUpdateSeconds)
-            {
-                averageFPS = numRendered / fpsUpdateSeconds;
-                lastFPSResetTime = System.nanoTime() / 1000000000.0;
-                numRendered = 0;
-            }
-            
-            g.drawString("FPS: " + String.format("%.2f", averageFPS), 2, (int)size.getHeight() - 20);
-            g.drawString("Tick: " + String.format("%.2f", 1/fixedDeltaTime), 2, (int)size.getHeight() - 5);
-            if(g != null)
-                g.dispose();
-            strategy.show();
-            Toolkit.getDefaultToolkit().sync();
-        }
-    }
-    
     public void run() {
         synchronized(world)
         {
@@ -184,9 +133,79 @@ public class GameCanvas extends Canvas implements Runnable {
         }, 0, 16);
     }
     
+    public synchronized void myRepaint() {
+        double rotY = 0, rotX = 0, rotSpeed = 1;
+        Point lastMouse = MouseInfo.getPointerInfo().getLocation();
+        
+        double lastFPSResetTime = System.nanoTime() / 1000000000.0;
+        int numRendered = 0;
+        double averageFPS=0, fpsUpdateSeconds = 0.2;
+        
+        double x = 0, y = 0, z = 0, slowRate = 0.95, moveSpeed = 5, fovSpeed = 0.5, fov = 0;
+        
+        while(true)
+        {
+            deltaTime = (System.nanoTime() - lastTime) / 1000000000.0;
+            lastTime = System.nanoTime();
+            numRendered++;
+            
+            BufferStrategy strategy = getBufferStrategy();
+            Graphics g = strategy.getDrawGraphics();
+            g.setColor(backColor);
+            size = this.getSize();
+            camera.ar = size.getWidth() / size.getHeight();
+            camera.offsetX = size.getWidth() / 2;
+            camera.offsetY = size.getHeight() / 2;
+            camera.scale = size.getHeight() / 2;
+            camera.drawScreen(g, world);
+
+            Point m = MouseInfo.getPointerInfo().getLocation();
+            rotY = (m.x - lastMouse.x) * -rotSpeed * deltaTime;
+            rotX = (m.y - lastMouse.y) * -rotSpeed * deltaTime;
+            if(lockMouse)
+                moveMouse(lastMouse);
+            else
+                lastMouse = m;
+            
+            camera.rotY += rotY;
+            camera.rotX += rotX;
+            x *= slowRate;
+            y *= slowRate;
+            z *= slowRate;
+            fov *= slowRate;
+
+            if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE)) y=moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) y=-moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_D)) x=moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_A)) x=-moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_W)) z=moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_S)) z=-moveSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_F)) fov=fovSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_R)) fov=-fovSpeed * deltaTime;
+            if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) lockMouse = false;
+            camera.transform.position.put(0,0, camera.transform.position.get(0,0) + x*Math.cos(camera.rotY) - z*Math.sin(camera.rotY));
+            camera.transform.position.put(1,0, camera.transform.position.get(1,0) + (Math.abs(y)>0.01?y:z*Math.sin(camera.rotX)));
+            camera.transform.position.put(2,0, camera.transform.position.get(2,0) + z*Math.cos(camera.rotY) + x*Math.sin(camera.rotY));
+            camera.fov += fov;
+            
+            if(System.nanoTime() / 1000000000.0 - lastFPSResetTime > fpsUpdateSeconds)
+            {
+                averageFPS = numRendered / fpsUpdateSeconds;
+                lastFPSResetTime = System.nanoTime() / 1000000000.0;
+                numRendered = 0;
+            }
+            
+            g.drawString("FPS: " + String.format("%.2f", averageFPS), 2, (int)size.getHeight() - 20);
+            g.drawString("Tick: " + String.format("%.2f", 1/fixedDeltaTime), 2, (int)size.getHeight() - 5);
+            if(g != null)
+                g.dispose();
+            strategy.show();
+            Toolkit.getDefaultToolkit().sync();
+        }
+    }
+    
     private void FixedUpdateLoop()
     {
-        double x = 0, y = 0, z = 0, slowRate = 0.95, moveSpeed = 5, rotSpeed = 0.001, fovSpeed = 0.5, fov = 0;
         fixedDeltaTime = (System.nanoTime() - fixedLastTime) / 1000000000.0;
         fixedLastTime = System.nanoTime();
         
@@ -205,25 +224,6 @@ public class GameCanvas extends Canvas implements Runnable {
         {
             for(GameObject obj : world.objects)
                 obj.OnFixedUpdate(fixedDeltaTime);
-
-            x *= slowRate;
-            y *= slowRate;
-            z *= slowRate;
-            fov *= slowRate;
-
-            if(IsKeyPressed.isPressed(KeyEvent.VK_SPACE)) y=moveSpeed * fixedDeltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_SHIFT)) y=-moveSpeed * fixedDeltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_D)) x=moveSpeed * fixedDeltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_A)) x=-moveSpeed * fixedDeltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_W)) z=moveSpeed * fixedDeltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_S)) z=-moveSpeed * fixedDeltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_F)) fov=fovSpeed * fixedDeltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_R)) fov=-fovSpeed * fixedDeltaTime;
-            if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) lockMouse = false;
-            camera.transform.position.put(0,0, camera.transform.position.get(0,0) + x*Math.cos(camera.rotY) - z*Math.sin(camera.rotY));
-            camera.transform.position.put(1,0, camera.transform.position.get(1,0) + (Math.abs(y)>0.01?y:z*Math.sin(camera.rotX)));
-            camera.transform.position.put(2,0, camera.transform.position.get(2,0) + z*Math.cos(camera.rotY) + x*Math.sin(camera.rotY));
-            camera.fov += fov;
         }
     }
     
