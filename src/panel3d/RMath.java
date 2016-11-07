@@ -27,4 +27,9 @@ public class RMath
     {
         return new DoubleMatrix(points).transpose();
     }
+    
+    public static double clamp(double num, double min, double max)
+    {
+        return Math.max(Math.min(num,max),min);
+    }
 }

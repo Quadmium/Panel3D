@@ -99,7 +99,7 @@ public class GameCanvas extends Canvas implements Runnable {
             TriSphere trisphere = new TriSphere();
             trisphere.transform.setPosition(new double[]{15,0,10});
             world.objects.add(trisphere);
-            TriSphere trisphere2 = new TriSphere(18, 10, 30, 0, 0);
+            TriSphere trisphere2 = new TriSphere(18, 10, 0, 0, 30);
             trisphere2.transform.setPosition(new double[]{8,0,-10+-17});
             world.objects.add(trisphere2);
             
@@ -116,11 +116,17 @@ public class GameCanvas extends Canvas implements Runnable {
                 world.objects.add(rectPrism);
             }
             
-            Ball ball = new Ball();
+            Ball ball = new Ball(1, 8, 20, 0, 0);
             ball.transform.setPosition(new double[]{2,5,-10+-15});
             ball.rigidbody.velocity.put(0, 8);
             ball.rigidbody.velocity.put(2, 9);
             world.objects.add(ball);
+            
+            Ball ball2 = new Ball(1.5, 8, 0, 20, 0);
+            ball2.transform.setPosition(new double[]{4,5,-10+-15});
+            ball2.rigidbody.velocity.put(0, 8);
+            ball2.rigidbody.velocity.put(2, 6);
+            world.objects.add(ball2);
             
             RectPrism rectPrism = new RectPrism(10,2,10);
             rectPrism.transform.setPosition(new double[]{-20,0,0});

@@ -44,12 +44,12 @@ public class TriSphere extends GameObject
         
         for(int tri=0; tri < mesh.triangles.size(); tri += 3)
         {
-            double a = (90 / radius * DoubleMatrix.ones(3).distance2(mesh.points.getColumn(mesh.triangles.get(tri)).add(
+            double a = (90 / Math.pow(radius, 0.7) * RMath.PTDM(new double[][]{{1, -1, -1}}).distance2(mesh.points.getColumn(mesh.triangles.get(tri)).add(
                                                                mesh.points.getColumn(mesh.triangles.get(tri+1)).add(
                                                                mesh.points.getColumn(mesh.triangles.get(tri+2)))).div(3)));
-            mesh.triColor.add(new Color((int)Utils.clamp(a + r, 0, 255),
-                                        (int)Utils.clamp(a + g, 0, 255),
-                                        (int)Utils.clamp(a + b, 0, 255)));
+            mesh.triColor.add(new Color((int)RMath.clamp(a + r, 0, 255),
+                                        (int)RMath.clamp(a + g, 0, 255),
+                                        (int)RMath.clamp(a + b, 0, 255)));
         }
         
         transform.rotX = Math.PI / 180 * -90;
