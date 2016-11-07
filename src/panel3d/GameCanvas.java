@@ -60,10 +60,6 @@ public class GameCanvas extends Canvas implements Runnable {
                 lockMouse = true;
             }
         });
-        
-        /*Chrono chrono = new Chrono(this);
-        timer = new Timer(15, chrono);
-        timer.start();*/
     }
     
     public void run() {
@@ -103,22 +99,25 @@ public class GameCanvas extends Canvas implements Runnable {
             TriSphere trisphere = new TriSphere();
             trisphere.transform.setPosition(new double[]{15,0,10});
             world.objects.add(trisphere);
+            TriSphere trisphere2 = new TriSphere(18, 10, 30, 0, 0);
+            trisphere2.transform.setPosition(new double[]{8,0,-10+-17});
+            world.objects.add(trisphere2);
             
             for(int r = 0; r < 5; r++)
             for(int rr = 0; rr < 5; rr++)
             {
-                cube = new GameObject();
+                /*cube = new GameObject();
                 cube.mesh = new Mesh(points2);
                 cube.transform.setPosition(new double[]{r*4,-4,-25+rr*4});
-                world.objects.add(cube);
-                /*RectPrism rectPrism = new RectPrism(4,4,4);
-                rectPrism.transform.setPosition(new double[]{r*4,-4,-25+rr*4});
+                world.objects.add(cube);*/
+                RectPrism rectPrism = new RectPrism(2,2,2);
+                rectPrism.transform.setPosition(new double[]{r*4,-4,-10+-25+rr*4});
                 rectPrism.supportsSolid = false;
-                world.objects.add(rectPrism);*/
+                world.objects.add(rectPrism);
             }
             
             Ball ball = new Ball();
-            ball.transform.setPosition(new double[]{2,2,-15});
+            ball.transform.setPosition(new double[]{2,2,-10+-15});
             ball.rigidbody.velocity.put(0, 8);
             ball.rigidbody.velocity.put(2, 9);
             world.objects.add(ball);
@@ -184,7 +183,7 @@ public class GameCanvas extends Canvas implements Runnable {
             if(IsKeyPressed.isPressed(KeyEvent.VK_R)) fov=-fovSpeed * deltaTime;
             if(IsKeyPressed.isPressed(KeyEvent.VK_ESCAPE)) lockMouse = false;
             camera.transform.position.put(0,0, camera.transform.position.get(0,0) + x*Math.cos(camera.rotY) - z*Math.sin(camera.rotY));
-            camera.transform.position.put(1,0, camera.transform.position.get(1,0) + (Math.abs(y)>0.01?y:z*Math.sin(camera.rotX)));
+            camera.transform.position.put(1,0, camera.transform.position.get(1,0) + (Math.abs(y)>0.6 * deltaTime ?y:z*Math.sin(camera.rotX)));
             camera.transform.position.put(2,0, camera.transform.position.get(2,0) + z*Math.cos(camera.rotY) + x*Math.sin(camera.rotY));
             camera.fov += fov;
             

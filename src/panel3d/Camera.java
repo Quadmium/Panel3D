@@ -12,7 +12,7 @@ public class Camera extends GameObject
     public double ar = 1;
     public double fov = 70 * Math.PI / 180;
     public double near = 0.01;
-    public double far = 50;
+    public double far = 100;
     public double rotY = 0;
     public double rotX = 0;
     public double offsetX = 400;

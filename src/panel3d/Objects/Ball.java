@@ -58,7 +58,7 @@ public class Ball extends GameObject
         
         rigidbody.OnFixedUpdate(deltaTime);
         
-        double lowerBarrier = -3, xB = 2, xB2 = 20, zB = -27, zB2 = -7, radius = 1;
+        double lowerBarrier = -3, xB = -1, xB2 = 17, zB = -10+-26, zB2 = -10+-8, radius = 1;
         
         if(transform.position.get(0) < xB + radius || transform.position.get(0) > xB2 - radius)
         {

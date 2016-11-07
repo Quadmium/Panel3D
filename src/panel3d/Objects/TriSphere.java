@@ -11,14 +11,18 @@ public class TriSphere extends GameObject
     
     public TriSphere()
     {
-        int subDiv = 10;
+        this(1, 8, 0, 0, 0);
+    }
+    
+    public TriSphere(double radius, int subDiv, double r, double g, double b)
+    {
         int triIndex = 0;
         for(double p = 0; p <= Math.PI + 0.001; p += Math.PI / subDiv)
         {
             for(double t = 0; t < 2 * Math.PI + 0.001; t += 2 * Math.PI / subDiv)
             {
                 if((p==0 || Math.PI - p < 0.0001) && t != 0) continue;
-                DoubleMatrix addition = RMath.PTDM(new double[][] {{Math.cos(t)*Math.sin(p), Math.sin(t)*Math.sin(p), Math.cos(p)}});
+                DoubleMatrix addition = RMath.PTDM(new double[][] {{radius*Math.cos(t)*Math.sin(p), radius*Math.sin(t)*Math.sin(p), radius*Math.cos(p)}});
                 if(mesh.points == null)
                     mesh.points = addition;
                 else
@@ -40,10 +44,12 @@ public class TriSphere extends GameObject
         
         for(int tri=0; tri < mesh.triangles.size(); tri += 3)
         {
-            int a = (int) (90 * DoubleMatrix.ones(3).distance2(mesh.points.getColumn(mesh.triangles.get(tri)).add(
+            double a = (90 / radius * DoubleMatrix.ones(3).distance2(mesh.points.getColumn(mesh.triangles.get(tri)).add(
                                                                mesh.points.getColumn(mesh.triangles.get(tri+1)).add(
                                                                mesh.points.getColumn(mesh.triangles.get(tri+2)))).div(3)));
-            mesh.triColor.add(new Color(a,a,a));
+            mesh.triColor.add(new Color((int)Utils.clamp(a + r, 0, 255),
+                                        (int)Utils.clamp(a + g, 0, 255),
+                                        (int)Utils.clamp(a + b, 0, 255)));
         }
         
         transform.rotX = Math.PI / 180 * -90;
