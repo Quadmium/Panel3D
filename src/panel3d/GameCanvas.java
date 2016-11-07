@@ -117,10 +117,15 @@ public class GameCanvas extends Canvas implements Runnable {
             }
             
             Ball ball = new Ball();
-            ball.transform.setPosition(new double[]{2,2,-10+-15});
+            ball.transform.setPosition(new double[]{2,5,-10+-15});
             ball.rigidbody.velocity.put(0, 8);
             ball.rigidbody.velocity.put(2, 9);
             world.objects.add(ball);
+            
+            RectPrism rectPrism = new RectPrism(10,2,10);
+            rectPrism.transform.setPosition(new double[]{-20,0,0});
+            rectPrism.supportsSolid = false;
+            world.objects.add(rectPrism);
         }
         new Thread(() -> {myRepaint();}).start();
         

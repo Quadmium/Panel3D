@@ -25,7 +25,6 @@ public class Rigidbody
     
     public void OnFixedUpdate(double deltaTime)
     {
-        System.out.println(deltaTime);
         velocity = velocity.add(acceleration.mul(deltaTime));
         parent.transform.position = parent.transform.position.add(velocity.mul(deltaTime));
         
