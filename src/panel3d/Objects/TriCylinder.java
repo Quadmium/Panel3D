@@ -11,13 +11,14 @@ public class TriCylinder extends GameObject
     
     public TriCylinder()
     {
-        this(1, 1, 8, 0, 0, 0);
+        this(1, 1, 8, 2, 0, 0, 0);
     }
     
-    public TriCylinder(double radius, double height, int subDiv, double r, double g, double b)
+    public TriCylinder(double radius, double height, int subDiv, int heightSubDiv, double r, double g, double b)
     {
         int numInCircle = 0;
-        for(int z = 0; z <= height; z += height)
+
+        for(double z = 0; z <= height + 0.001; z += height / heightSubDiv)
         {
             for(double t = 0; t < 2 * Math.PI + 0.001; t += 2 * Math.PI / subDiv)
             {
@@ -29,6 +30,7 @@ public class TriCylinder extends GameObject
                 
                 if(z==0)
                     numInCircle++;
+               
             }
         }
         
@@ -39,7 +41,7 @@ public class TriCylinder extends GameObject
                 
         int bottom = mesh.points.columns - 2;
         int top = mesh.points.columns - 1;
-        for(int i=0; i<numInCircle-1; i++)
+        for(int i = 0; i < (numInCircle) * heightSubDiv - 1; i++)
         {
             // i-> i+n -> i+n+1
             mesh.triangles.add(i);
@@ -49,14 +51,20 @@ public class TriCylinder extends GameObject
             mesh.triangles.add(i);
             mesh.triangles.add(i+numInCircle+1);
             mesh.triangles.add(i+1);
-            // i-> b -> i+1
-            mesh.triangles.add(i);
-            mesh.triangles.add(bottom);
-            mesh.triangles.add(i+1);
-            // i-> t -> i+1
-            mesh.triangles.add(i+numInCircle);
-            mesh.triangles.add(top);
-            mesh.triangles.add(i+numInCircle+1);
+            if(i < numInCircle)
+            {
+                // i-> b -> i+1
+                mesh.triangles.add(i);
+                mesh.triangles.add(bottom);
+                mesh.triangles.add(i+1);
+            }
+            else if(i >= (numInCircle-1) * heightSubDiv - numInCircle - 1)
+            {
+                // i-> t -> i+1
+                mesh.triangles.add(i+numInCircle);
+                mesh.triangles.add(top);
+                mesh.triangles.add(i+numInCircle+1);
+            }
         }
         
         for(int tri=0; tri < mesh.triangles.size(); tri += 3)

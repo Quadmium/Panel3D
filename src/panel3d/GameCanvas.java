@@ -103,7 +103,7 @@ public class GameCanvas extends Canvas implements Runnable {
             trisphere2.transform.setPosition(new double[]{8,0,-10+-17});
             world.objects.add(trisphere2);
             
-            TriCylinder cyl = new TriCylinder(1, 1, 8, 0, 0, 0);
+            TriCylinder cyl = new TriCylinder(1, 1, 8, 2, 0, 0, 0);
             cyl.transform.setPosition(new double[]{-2, 0, 0});
             world.objects.add(cyl);
             
